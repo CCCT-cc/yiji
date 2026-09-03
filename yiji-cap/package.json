@@ -1,0 +1,13 @@
+{
+  "name": "yiji-cap",
+  "version": "1.0.0",
+  "private": true,
+  "description": "一记 · 极简记账 安卓原生壳（Capacitor 包装 PWA）",
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/core": "^6.2.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.0"
+  }
+}

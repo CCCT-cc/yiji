@@ -1,0 +1,21 @@
+.group { margin: 16rpx 16rpx 0; }
+.group-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 24rpx;
+  color: #888;
+  padding: 12rpx 8rpx;
+}
+.list-card { margin: 0; padding: 0 24rpx; }
+.tx-row {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #f3f3f3;
+}
+.tx-row:last-child { border-bottom: none; }
+.tx-icon { font-size: 40rpx; margin-right: 20rpx; }
+.tx-mid { flex: 1; display: flex; flex-direction: column; }
+.tx-cat { font-size: 30rpx; color: #222; }
+.tx-sub { font-size: 24rpx; margin-top: 4rpx; }
+.tx-amt { font-size: 32rpx; font-weight: 600; }

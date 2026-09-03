@@ -1,0 +1,36 @@
+<view class="card sum-card">
+  <view class="sum-row">
+    <view class="sum-item">
+      <text class="c-muted">本月收入</text>
+      <text class="c-green sum-num">+{{income}}</text>
+    </view>
+    <view class="sum-item">
+      <text class="c-muted">本月支出</text>
+      <text class="c-red sum-num">-{{expense}}</text>
+    </view>
+    <view class="sum-item">
+      <text class="c-muted">结余</text>
+      <text class="sum-num">{{balance}}</text>
+    </view>
+  </view>
+</view>
+
+<view class="card">
+  <view class="row-between sec-head">
+    <text class="sec-title">{{ym}} 支出构成</text>
+  </view>
+  <view wx:if="{{rows.length === 0}}" class="empty" style="padding:60rpx 0">本月暂无支出</view>
+  <view wx:for="{{rows}}" wx:key="name" class="bar-row">
+    <text class="bar-icon">{{item.icon}}</text>
+    <view class="bar-mid">
+      <view class="bar-top">
+        <text class="bar-name">{{item.name}}</text>
+        <text class="bar-amt">¥{{item.amount}}</text>
+      </view>
+      <view class="bar-track">
+        <view class="bar-fill" style="width:{{item.pct}}%"></view>
+      </view>
+    </view>
+    <text class="bar-pct">{{item.pct}}%</text>
+  </view>
+</view>

@@ -1,0 +1,23 @@
+.sum-card { margin-top: 16rpx; }
+.sum-row { display: flex; justify-content: space-between; }
+.sum-item { display: flex; flex-direction: column; flex: 1; align-items: center; }
+.sum-num { font-size: 34rpx; font-weight: 700; margin-top: 8rpx; }
+
+.sec-head { margin-bottom: 12rpx; }
+.sec-title { font-size: 28rpx; font-weight: 600; color: #333; }
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  padding: 18rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+.bar-row:last-child { border-bottom: none; }
+.bar-icon { font-size: 36rpx; margin-right: 16rpx; }
+.bar-mid { flex: 1; margin-right: 16rpx; }
+.bar-top { display: flex; justify-content: space-between; font-size: 28rpx; }
+.bar-name { color: #333; }
+.bar-amt { color: #555; font-weight: 600; }
+.bar-track { background: #f0f0f0; height: 12rpx; border-radius: 999rpx; margin-top: 10rpx; overflow: hidden; }
+.bar-fill { background: #2f7d4f; height: 100%; border-radius: 999rpx; }
+.bar-pct { width: 72rpx; text-align: right; font-size: 24rpx; color: #999; }

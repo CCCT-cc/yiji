@@ -1,0 +1,16 @@
+{
+  "name": "yiji-desktop",
+  "version": "1.0.0",
+  "description": "一记 · 极简记账 桌面版（Electron 封装）",
+  "main": "main.js",
+  "author": "一记",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-packager . 一记 --platform=win32 --arch=x64 --out=dist --overwrite"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-packager": "^17.1.2"
+  }
+}

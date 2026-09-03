@@ -1,0 +1,51 @@
+# ============ 通用 ============
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+.env
+.env.local
+
+# ============ 内部/隐私（绝不进仓库） ============
+# WorkBuddy 项目内部记忆
+.workbuddy/
+# 9/2 清档时挪走的旧账本数据（含真实记账）
+_yiji_trash_leveldb/
+# 任何真实账本/备份数据
+backups/
+userData/
+Local Storage/
+*.leveldb/
+*一记数据*
+*备份*.json
+auto_latest.json
+lvlparse.py
+
+# ============ 桌面版 yiji-desktop ============
+yiji-desktop/dist/
+yiji-desktop/dist2/
+yiji-desktop/_OLD_BUILDS/
+
+# ============ 安卓 yiji-cap（密钥/构建产物） ============
+yiji-cap/node_modules/
+# ⚠️ 安卓发布签名私钥与密码 —— 泄露等于任何人能以你的名义发版，禁止提交！
+yiji-cap/yiji-release.keystore
+yiji-cap/KEYSTORE_INFO.txt
+yiji-cap/android/keystore.properties
+yiji-cap/android/*.keystore
+yiji-cap/android/*.jks
+# 发布产物
+yiji-cap/app-release.aab
+yiji-cap/app-release.apk
+yiji-cap/android/app/build/
+yiji-cap/android/app/release/
+yiji-cap/android/.gradle/
+yiji-cap/android/app/build/outputs/
+
+# ============ 小程序 yiji-mp ============
+yiji-mp/node_modules/
+
+# ============ 网页版 yiji ============
+yiji/node_modules/

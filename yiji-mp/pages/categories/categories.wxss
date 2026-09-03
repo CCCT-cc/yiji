@@ -1,0 +1,31 @@
+.page { padding: 24rpx 24rpx 160rpx; min-height: 100vh; background: #f5f6f8; }
+
+.seg { display: flex; background: #fff; border-radius: 16rpx; padding: 8rpx; margin-bottom: 24rpx; }
+.seg-item { flex: 1; text-align: center; padding: 18rpx 0; font-size: 28rpx; color: #666; border-radius: 12rpx; }
+.seg-item.on { background: #2f7d4f; color: #fff; font-weight: 600; }
+.seg.small .seg-item { padding: 14rpx 0; font-size: 26rpx; }
+
+.list { background: #fff; border-radius: 16rpx; overflow: hidden; }
+.cat-row { display: flex; align-items: center; padding: 28rpx 24rpx; border-bottom: 1rpx solid #f0f0f0; }
+.cat-icon { font-size: 44rpx; margin-right: 20rpx; }
+.cat-main { flex: 1; display: flex; align-items: center; }
+.cat-name { font-size: 30rpx; color: #222; }
+.cat-tag { font-size: 22rpx; color: #999; background: #f2f2f2; border-radius: 8rpx; padding: 2rpx 12rpx; margin-left: 16rpx; }
+.cat-del { font-size: 26rpx; color: #e54d42; padding: 8rpx 16rpx; }
+.empty { padding: 60rpx 24rpx; text-align: center; color: #999; font-size: 26rpx; }
+
+.fab { position: fixed; left: 50%; bottom: 48rpx; transform: translateX(-50%); background: #2f7d4f; color: #fff; padding: 24rpx 56rpx; border-radius: 999rpx; font-size: 30rpx; box-shadow: 0 8rpx 24rpx rgba(47,125,79,0.3); }
+
+.mask { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; z-index: 50; }
+.sheet { width: 100%; background: #fff; border-radius: 24rpx 24rpx 0 0; padding: 32rpx 32rpx 48rpx; box-sizing: border-box; }
+.sheet-title { font-size: 32rpx; font-weight: 600; text-align: center; margin-bottom: 28rpx; }
+.field { margin-bottom: 28rpx; }
+.field-label { display: block; font-size: 26rpx; color: #888; margin-bottom: 12rpx; }
+.field-input { background: #f5f6f8; border-radius: 12rpx; padding: 22rpx 24rpx; font-size: 30rpx; }
+.icon-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 12rpx; }
+.icon-cell { text-align: center; font-size: 40rpx; padding: 14rpx 0; background: #f5f6f8; border-radius: 12rpx; border: 2rpx solid transparent; }
+.icon-cell.sel { border-color: #2f7d4f; background: #eaf5ee; }
+.sheet-actions { display: flex; gap: 20rpx; margin-top: 12rpx; }
+.btn { flex: 1; border-radius: 14rpx; font-size: 30rpx; padding: 22rpx 0; }
+.btn.ghost { background: #f0f0f0; color: #555; }
+.btn.primary { background: #2f7d4f; color: #fff; }

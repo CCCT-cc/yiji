@@ -1,0 +1,38 @@
+<view class="hero">
+  <view class="hero-top">
+    <view class="ledger-name" bindtap="goLedgers">📒 {{ledgerName}} ▾</view>
+  </view>
+  <view class="hero-label">净资产（合计）</view>
+  <view class="hero-num">¥ {{netWorth}}</view>
+  <view class="hero-sub">
+    <view class="hero-sub-item">
+      <text class="c-muted">本月收入</text>
+      <text class="c-green">+{{income}}</text>
+    </view>
+    <view class="hero-sub-item">
+      <text class="c-muted">本月支出</text>
+      <text class="c-red">-{{expense}}</text>
+    </view>
+    <view class="hero-sub-item">
+      <text class="c-muted">结余</text>
+      <text class="{{balance[0]==='-' ? 'c-red' : 'c-green'}}">{{balance}}</text>
+    </view>
+  </view>
+</view>
+
+<view class="card acc-break">
+  <view class="row-between acc-head">
+    <text class="acc-title">按账户</text>
+    <text class="acc-more" bindtap="goAccounts">管理 ›</text>
+  </view>
+  <block wx:if="{{accounts.length === 0}}">
+    <view class="empty">还没有账户，点「管理」添加</view>
+  </block>
+  <view wx:for="{{accounts}}" wx:key="id" class="acc-row">
+    <text class="acc-icon">{{item.icon}}</text>
+    <text class="acc-name">{{item.name}}</text>
+    <text class="acc-bal {{item.balance[0]==='-' ? 'c-red' : ''}}">¥ {{item.balance}}</text>
+  </view>
+</view>
+
+<view class="fab" bindtap="goAdd">＋</view>

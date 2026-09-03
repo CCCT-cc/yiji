@@ -1,0 +1,26 @@
+# 依赖
+node_modules/
+
+# 打包/构建产物（体积巨大，由使用者自行 npm run pack 生成）
+dist/
+dist2/
+_OLD_BUILDS/
+
+# 用户运行时数据（绝对不能进仓库：含真实账本与自动备份）
+backups/
+userData/
+Local Storage/
+*.leveldb/
+*一记数据*
+*备份*.json
+
+# 系统/编辑器
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+
+# 环境变量 / 密钥
+.env
+.env.local

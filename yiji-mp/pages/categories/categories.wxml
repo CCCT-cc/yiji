@@ -1,0 +1,48 @@
+<view class="page">
+  <view class="seg">
+    <view class="seg-item {{type==='expense'?'on':''}}" data-type="expense" bindtap="switchType">支出分类</view>
+    <view class="seg-item {{type==='income'?'on':''}}" data-type="income" bindtap="switchType">收入分类</view>
+  </view>
+
+  <view class="list">
+    <view class="cat-row" wx:for="{{categories}}" wx:key="id">
+      <text class="cat-icon">{{item.icon}}</text>
+      <view class="cat-main">
+        <text class="cat-name">{{item.name}}</text>
+        <text class="cat-tag">{{item.typeLabel}}</text>
+      </view>
+      <text class="cat-del" data-id="{{item.id}}" catchtap="del">删除</text>
+    </view>
+    <view wx:if="{{categories.length===0}}" class="empty">暂无{{type==='income'?'收入':'支出'}}分类，点击下方按钮添加</view>
+  </view>
+
+  <view class="fab" bindtap="openAdd">＋ 添加分类</view>
+
+  <!-- 添加弹层 -->
+  <view wx:if="{{showForm}}" class="mask" bindtap="closeForm">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-title">添加分类</view>
+      <view class="field">
+        <text class="field-label">名称</text>
+        <input class="field-input" placeholder="如：餐饮" value="{{name}}" bindinput="onName" />
+      </view>
+      <view class="field">
+        <text class="field-label">类型</text>
+        <view class="seg small">
+          <view class="seg-item {{type==='expense'?'on':''}}" data-type="expense" bindtap="switchType">支出</view>
+          <view class="seg-item {{type==='income'?'on':''}}" data-type="income" bindtap="switchType">收入</view>
+        </view>
+      </view>
+      <view class="field">
+        <text class="field-label">图标</text>
+        <view class="icon-grid">
+          <view wx:for="{{icons}}" wx:key="*this" class="icon-cell {{iconIndex===index?'sel':''}}" data-i="{{index}}" bindtap="pickIcon">{{item}}</view>
+        </view>
+      </view>
+      <view class="sheet-actions">
+        <button class="btn ghost" bindtap="closeForm">取消</button>
+        <button class="btn primary" bindtap="save">保存</button>
+      </view>
+    </view>
+  </view>
+</view>

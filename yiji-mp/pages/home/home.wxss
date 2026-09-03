@@ -1,0 +1,48 @@
+.hero {
+  background: linear-gradient(135deg, #2f7d4f, #3a9a63);
+  color: #fff;
+  padding: 24rpx 40rpx 48rpx;
+}
+.hero-top { margin-bottom: 16rpx; }
+.ledger-name {
+  display: inline-block;
+  font-size: 26rpx;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 6rpx 20rpx;
+  border-radius: 999rpx;
+}
+.hero-label { font-size: 26rpx; opacity: 0.85; margin-top: 12rpx; }
+.hero-num {
+  font-size: 72rpx;
+  font-weight: 700;
+  letter-spacing: 1rpx;
+  margin: 8rpx 0 24rpx;
+}
+.hero-sub {
+  display: flex;
+  justify-content: space-between;
+}
+.hero-sub-item {
+  display: flex;
+  flex-direction: column;
+  font-size: 26rpx;
+}
+.hero-sub-item text:last-child {
+  font-weight: 600;
+  margin-top: 4rpx;
+}
+
+.acc-break { margin-top: -20rpx; }
+.acc-head { margin-bottom: 8rpx; }
+.acc-title { font-size: 28rpx; font-weight: 600; color: #333; }
+.acc-more { font-size: 26rpx; color: #2f7d4f; }
+.acc-row {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+.acc-row:last-child { border-bottom: none; }
+.acc-icon { font-size: 40rpx; margin-right: 20rpx; }
+.acc-name { flex: 1; font-size: 28rpx; color: #333; }
+.acc-bal { font-size: 30rpx; font-weight: 600; color: #2f7d4f; }

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人记账 APP 完整产品方案</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --card:#ffffff; --ink:#1f2329; --sub:#646a73; --line:#e8eaed;
+    --brand:#2f7d4f; --brand-soft:#e7f3ec; --accent:#2b6fe0; --warn:#e8704a; --danger:#d64545;
+    --radius:14px; --shadow:0 2px 12px rgba(0,0,0,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Segoe UI,Roboto,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.7;font-size:15px}
+  header.hero{background:linear-gradient(135deg,#2f7d4f,#3a9d63);color:#fff;padding:46px 28px 38px}
+  header.hero h1{margin:0 0 8px;font-size:28px;letter-spacing:1px}
+  header.hero p{margin:0;opacity:.92;font-size:15px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+  nav.toc{position:sticky;top:0;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);z-index:20;padding:10px 0;margin-bottom:26px}
+  nav.toc ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;justify-content:center}
+  nav.toc a{font-size:13px;color:var(--sub);text-decoration:none;padding:5px 11px;border-radius:20px;background:var(--bg)}
+  nav.toc a:hover{background:var(--brand-soft);color:var(--brand)}
+  section{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px 28px;margin:0 0 22px}
+  h2{font-size:21px;margin:0 0 6px;padding-left:12px;border-left:4px solid var(--brand)}
+  h2 .en{font-size:13px;color:var(--sub);font-weight:400;margin-left:8px}
+  h3{font-size:17px;margin:22px 0 8px;color:var(--brand)}
+  h4{font-size:15px;margin:16px 0 6px;color:var(--ink)}
+  p{margin:8px 0}
+  .muted{color:var(--sub);font-size:13.5px}
+  ul,ol{margin:8px 0;padding-left:22px}
+  li{margin:4px 0}
+  .grid{display:grid;gap:14px}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:760px){.g3,.g2{grid-template-columns:1fr}}
+  .card{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fcfdfe}
+  .card h4{margin-top:0}
+  .tag{display:inline-block;font-size:12px;padding:2px 9px;border-radius:6px;background:var(--brand-soft);color:var(--brand);margin-right:6px}
+  .tag.warn{background:#fdeee8;color:var(--warn)}
+  .tag.danger{background:#fbe9e9;color:var(--danger)}
+  .tag.gray{background:var(--bg);color:var(--sub)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;margin:10px 0}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:600}
+  td code{background:var(--bg);padding:1px 6px;border-radius:5px;font-size:12.5px}
+  svg{width:100%;height:auto;display:block}
+  .fig{background:#fcfdfe;border:1px solid var(--line);border-radius:12px;padding:14px;margin:14px 0}
+  .fig .cap{font-size:13px;color:var(--sub);text-align:center;margin-top:8px}
+  .swatch{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+  .sw{width:96px;text-align:center}
+  .sw .c{height:54px;border-radius:10px;border:1px solid rgba(0,0,0,.06)}
+  .sw .n{font-size:12px;margin-top:6px;color:var(--sub)}
+  .sw .v{font-size:11.5px;color:var(--ink);font-family:ui-monospace,monospace}
+  .flow-node{fill:#fff;stroke:var(--brand);stroke-width:1.6}
+  .flow-edge{stroke:#9aa3ad;stroke-width:1.4;fill:none}
+  .flow-warn{fill:#fbe9e9;stroke:var(--danger);stroke-width:1.6}
+  .flow-act{fill:var(--brand-soft);stroke:var(--brand);stroke-width:1.6}
+  .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12.5px;background:var(--bg);color:var(--sub);margin:2px 4px 2px 0}
+  .note{border-left:3px solid var(--accent);background:#eef4fe;padding:10px 14px;border-radius:0 10px 10px 0;margin:10px 0;font-size:13.5px}
+  .roadmap{display:grid;gap:0;grid-template-columns:120px 1fr}
+  .rm-phase{padding:14px 0;border-top:1px dashed var(--line)}
+  .rm-body{padding:14px 0 14px 20px;border-top:1px dashed var(--line)}
+  .rm-phase b{color:var(--brand)}
+  footer{text-align:center;color:var(--sub);font-size:13px;padding:24px}
+  .kbd{font-family:ui-monospace,monospace;background:#eef0f2;padding:1px 6px;border-radius:5px;font-size:12.5px}
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>个人记账 APP · 完整产品方案</h1>
+  <p>极简录入 + 深度洞察 ｜ 仅个人使用 ｜ Flutter 跨平台（iOS + Android）｜ 离线优先架构</p>
+</header>
+
+<div class="wrap">
+<nav class="toc">
+  <ul>
+    <li><a href="#n1">1 命名建议</a></li>
+    <li><a href="#n2">2 信息架构</a></li>
+    <li><a href="#n3">3 核心流程图</a></li>
+    <li><a href="#n4">4 功能模块 PRD</a></li>
+    <li><a href="#n5">5 数据模型 ER</a></li>
+    <li><a href="#n6">6 MVP 与路线图</a></li>
+    <li><a href="#n7">7 UI 风格</a></li>
+  </ul>
+</nav>
+
+<!-- 1 命名 -->
+<section id="n1">
+  <h2>1. 产品命名建议 <span class="en">Naming</span></h2>
+  <p class="muted">均为个人工具属性，无社交/品牌负担，域名与商店上架阻力小。</p>
+  <div class="grid g3">
+    <div class="card">
+      <h4>① 一记 <span class="tag">推荐</span></h4>
+      <p>读音 <b>yī jì</b>。Slogan：「一记就好」。直击「一键记一笔」核心动作，三步内完成，记忆成本低，天然适配桌面 Widget 名称。中文商店搜索「一记」竞争小。</p>
+    </div>
+    <div class="card">
+      <h4>② 钱迹 <span class="tag gray">备选</span></h4>
+      <p>读音 <b>qián jì</b>。钱的轨迹/痕迹，强调「深度洞察」——流水、趋势、净资产都是「迹」。偏分析向，适合后期资产管理总览卖点。</p>
+    </div>
+    <div class="card">
+      <h4>③ 简记 <span class="tag gray">备选</span></h4>
+      <p>读音 <b>jiǎn jì</b>。极简 + 记账，表意直白，小白友好。缺点是通用词、商标防御性弱，可作为副标题或功能区命名。</p>
+    </div>
+  </div>
+  <div class="note"><b>推荐结论：</b>主名用 <b>一记</b>，副标题「极简记账 · 你的私人财务台」。上线后用「一记 · 极简记账」做 ASO 关键词覆盖。</div>
+</section>
+
+<!-- 2 信息架构 -->
+<section id="n2">
+  <h2>2. 信息架构图 <span class="en">Information Architecture</span></h2>
+  <p class="muted">底部 5 个 Tab：记账 / 流水 / 统计 / 资产 / 我的。高频「记一笔」置于底部导航正中悬浮按钮（单手可及）。</p>
+  <div class="fig">
+    <svg viewBox="0 0 680 520" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L7,3 L0,6 Z" fill="#9aa3ad"/>
+        </marker>
+      </defs>
+      <!-- root -->
+      <rect x="270" y="14" width="140" height="40" rx="10" class="flow-act"/>
+      <text x="340" y="39" text-anchor="middle" font-size="14" fill="#2f7d4f" font-weight="700">一记 APP</text>
+      <!-- 5 tabs -->
+      <g font-size="13">
+        <rect x="20" y="90" width="120" height="38" rx="9" class="flow-node"/><text x="80" y="114" text-anchor="middle">记账(首页)</text>
+        <rect x="160" y="90" width="110" height="38" rx="9" class="flow-node"/><text x="215" y="114" text-anchor="middle">流水</text>
+        <rect x="300" y="78" width="80" height="52" rx="26" class="flow-act"/><text x="340" y="108" text-anchor="middle" font-size="12" fill="#2f7d4f" font-weight="700">＋记一笔</text>
+        <rect x="450" y="90" width="100" height="38" rx="9" class="flow-node"/><text x="500" y="114" text-anchor="middle">统计</text>
+        <rect x="570" y="90" width="92" height="38" rx="9" class="flow-node"/><text x="616" y="114" text-anchor="middle">我的</text>
+      </g>
+      <g stroke="#9aa3ad" stroke-width="1.2" marker-end="url(#ar)">
+        <line x1="300" y1="54" x2="80" y2="90"/>
+        <line x1="330" y1="54" x2="215" y2="90"/>
+        <line x1="350" y1="54" x2="500" y2="90"/>
+        <line x1="370" y1="54" x2="616" y2="90"/>
+      </g>
+      <!-- children of 记账 -->
+      <g font-size="12" fill="#333">
+        <rect x="10" y="160" width="150" height="34" rx="8" class="flow-node"/><text x="85" y="181" text-anchor="middle">快速记账(计算器键盘)</text>
+        <rect x="10" y="206" width="150" height="34" rx="8" class="flow-node"/><text x="85" y="227" text-anchor="middle">选择分类 / 账户</text>
+        <rect x="10" y="252" width="150" height="34" rx="8" class="flow-node"/><text x="85" y="273" text-anchor="middle">备注 / 标签 / 日期</text>
+        <rect x="10" y="298" width="150" height="34" rx="8" class="flow-node"/><text x="85" y="319" text-anchor="middle">转账(账户间)</text>
+      </g>
+      <g stroke="#c9cfd6" stroke-width="1.1" marker-end="url(#ar)">
+        <line x1="80" y1="128" x2="85" y2="160"/>
+        <line x1="85" y1="194" x2="85" y2="206"/>
+        <line x1="85" y1="240" x2="85" y2="252"/>
+        <line x1="85" y1="286" x2="85" y2="298"/>
+      </g>
+      <!-- children 流水 -->
+      <g font-size="12" fill="#333">
+        <rect x="150" y="160" width="150" height="34" rx="8" class="flow-node"/><text x="225" y="181" text-anchor="middle">日历视图(按日)</text>
+        <rect x="150" y="206" width="150" height="34" rx="8" class="flow-node"/><text x="225" y="227" text-anchor="middle">流水列表(倒序)</text>
+        <rect x="150" y="252" width="150" height="34" rx="8" class="flow-node"/><text x="225" y="273" text-anchor="middle">搜索 / 筛选</text>
+        <rect x="150" y="298" width="150" height="34" rx="8" class="flow-node"/><text x="225" y="319" text-anchor="middle">批量编辑/删除</text>
+      </g>
+      <g stroke="#c9cfd6" stroke-width="1.1" marker-end="url(#ar)">
+        <line x1="215" y1="128" x2="225" y2="160"/>
+        <line x1="225" y1="194" x2="225" y2="206"/>
+        <line x1="225" y1="240" x2="225" y2="252"/>
+        <line x1="225" y1="286" x2="225" y2="298"/>
+      </g>
+      <!-- children 统计 -->
+      <g font-size="12" fill="#333">
+        <rect x="430" y="160" width="150" height="34" rx="8" class="flow-node"/><text x="505" y="181" text-anchor="middle">月度收支汇总</text>
+        <rect x="430" y="206" width="150" height="34" rx="8" class="flow-node"/><text x="505" y="227" text-anchor="middle">分类占比饼图</text>
+        <rect x="430" y="252" width="150" height="34" rx="8" class="flow-node"/><text x="505" y="273" text-anchor="middle">收支趋势折线</text>
+        <rect x="430" y="298" width="150" height="34" rx="8" class="flow-node"/><text x="505" y="319" text-anchor="middle">同比/环比</text>
+      </g>
+      <g stroke="#c9cfd6" stroke-width="1.1" marker-end="url(#ar)">
+        <line x1="500" y1="128" x2="505" y2="160"/>
+        <line x1="505" y1="194" x2="505" y2="206"/>
+        <line x1="505" y1="240" x2="505" y2="252"/>
+        <line x1="505" y1="286" x2="505" y2="298"/>
+      </g>
+      <!-- children 我的 -->
+      <g font-size="12" fill="#333">
+        <rect x="560" y="160" width="112" height="34" rx="8" class="flow-node"/><text x="616" y="181" text-anchor="middle">多账户管理</text>
+        <rect x="560" y="206" width="112" height="34" rx="8" class="flow-node"/><text x="616" y="227" text-anchor="middle">分类管理</text>
+        <rect x="560" y="252" width="112" height="34" rx="8" class="flow-node"/><text x="616" y="273" text-anchor="middle">预算</text>
+        <rect x="560" y="298" width="112" height="34" rx="8" class="flow-node"/><text x="616" y="319" text-anchor="middle">周期账单</text>
+        <rect x="560" y="344" width="112" height="34" rx="8" class="flow-node"/><text x="616" y="365" text-anchor="middle">多账本</text>
+        <rect x="560" y="390" width="112" height="34" rx="8" class="flow-node"/><text x="616" y="411" text-anchor="middle">设置/备份</text>
+      </g>
+      <g stroke="#c9cfd6" stroke-width="1.1" marker-end="url(#ar)">
+        <line x1="616" y1="128" x2="616" y2="160"/>
+        <line x1="616" y1="194" x2="616" y2="206"/>
+        <line x1="616" y1="240" x2="616" y2="252"/>
+        <line x1="616" y1="286" x2="616" y2="298"/>
+        <line x1="616" y1="332" x2="616" y2="344"/>
+        <line x1="616" y1="378" x2="616" y2="390"/>
+      </g>
+    </svg>
+    <div class="cap">图 2-1 信息架构（页面层级与底部导航）</div>
+  </div>
+</section>
+
+<!-- 3 核心流程图 -->
+<section id="n3">
+  <h2>3. 核心用户流程图 <span class="en">Core Flow: 记一笔 → 查看统计</span></h2>
+  <div class="fig">
+    <svg viewBox="0 0 680 360" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="ar2" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L7,3 L0,6 Z" fill="#9aa3ad"/>
+        </marker>
+      </defs>
+      <g font-size="13" text-anchor="middle">
+        <rect x="30" y="40" width="150" height="42" rx="10" class="flow-act"/><text x="105" y="66">① 首页点「＋记一笔」</text>
+        <rect x="30" y="120" width="150" height="42" rx="10" class="flow-node"/><text x="105" y="146">② 输入金额(计算器)</text>
+        <rect x="30" y="200" width="150" height="42" rx="10" class="flow-node"/><text x="105" y="226">③ 选分类+账户</text>
+        <rect x="30" y="280" width="150" height="42" rx="10" class="flow-node"/><text x="105" y="306">④ 确认保存</text>
+        <!-- right branch -->
+        <rect x="260" y="200" width="170" height="42" rx="10" class="flow-node"/><text x="345" y="226">余额实时联动更新</text>
+        <rect x="470" y="40" width="180" height="42" rx="10" class="flow-node"/><text x="560" y="66">流水列表新增该条</text>
+        <rect x="470" y="120" width="180" height="42" rx="10" class="flow-node"/><text x="560" y="146">进入「统计」Tab</text>
+        <rect x="470" y="200" width="180" height="42" rx="10" class="flow-node"/><text x="560" y="226">月度汇总/饼图/趋势</text>
+        <rect x="470" y="280" width="180" height="42" rx="10" class="flow-act"/><text x="560" y="306">洞察：结余与超支预警</text>
+      </g>
+      <g stroke="#9aa3ad" stroke-width="1.4" fill="none" marker-end="url(#ar2)">
+        <path d="M105,82 C105,95 105,95 105,118"/>
+        <path d="M105,162 C105,175 105,175 105,198"/>
+        <path d="M105,242 C105,255 105,255 105,278"/>
+        <path d="M180,301 C220,301 220,221 258,221"/>
+        <path d="M180,61 C300,61 300,61 468,61"/>
+        <path d="M560,82 C560,95 560,95 560,118"/>
+        <path d="M560,162 C560,175 560,175 560,198"/>
+        <path d="M560,242 C560,255 560,255 560,278"/>
+        <path d="M430,221 C450,221 450,301 468,301" stroke-dasharray="5 4"/>
+      </g>
+      <!-- exception -->
+      <rect x="260" y="280" width="170" height="42" rx="10" class="flow-warn" font-size="12"/>
+      <text x="345" y="305" text-anchor="middle" font-size="12" fill="#d64545">异常：金额=0 / 无网络</text>
+      <path d="M260,301 C235,301 200,301 180,301" stroke="#d64545" stroke-width="1.3" fill="none" marker-end="url(#ar2)" stroke-dasharray="4 3"/>
+    </svg>
+    <div class="cap">图 3-1 记一笔账 → 查看统计 的主流程与异常分支</div>
+  </div>
+  <div class="note">流程约束：从「＋」到保存 ≤ 3 步（金额 → 分类/账户 → 保存）；若金额页已预设上次的分类与账户，可一步保存。所有写操作本地落库后异步触发同步（离线优先）。</div>
+</section>
+
+<!-- 4 功能模块 PRD -->
+<section id="n4">
+  <h2>4. 各功能模块详细 PRD <span class="en">Module Specs</span></h2>
+
+  <h3>4.1 第一层 · 核心基础功能（MVP）</h3>
+
+  <h4>① 快速记账</h4>
+  <ul>
+    <li><b>字段：</b>金额、type(支出/收入/转账)、category_id、account_id、to_account_id(转账)、note、transaction_date、tags。</li>
+    <li><b>交互：</b>底部悬浮「＋」→ 弹出金额计算器键盘（默认 0.00，支持 <span class="kbd">+ - × ÷</span> 与退格）→ 选分类+账户（卡片式，带图标与颜色）→ 点「保存」。备注可选，点开抽屉输入。</li>
+    <li><b>计算器规则：</b>连续运算（如 <span class="kbd">12.5+3.5=16</span>）；结果自动千分位；最多 2 位小数；除零提示「无效运算」。</li>
+    <li><b>智能默认：</b>记住上次选择的分类/账户，下次预填；长按「＋」可语音记账（第三层）。</li>
+    <li><b>异常：</b>金额为 0 或空 → 禁用保存并抖动提示；日期选未来 → 允许（待入账），但统计按月归集到实际日期；保存失败 → 本地重试队列 + Toast「稍后自动保存」。</li>
+  </ul>
+
+  <h4>② 收支分类体系</h4>
+  <ul>
+    <li><b>预设支出：</b>餐饮、交通、购物、居住、娱乐、医疗、教育、人情、通讯、日用（各带默认图标+颜色）。</li>
+    <li><b>预设收入：</b>工资、奖金、理财收益、兼职、红包、报销。</li>
+    <li><b>自定义：</b>名称 + 图标(内置图标库) + 颜色(调色板)；支持二级分类（parent_id）。</li>
+    <li><b>管理：</b>拖拽排序、隐藏（隐藏后不出现在快捷选择但历史保留）、删除（软删除，若已有交易则提示「将归为「未分类」」）。</li>
+    <li><b>异常：</b>删除系统预设分类 → 二次确认；重名 → 允许（同色不同图标不冲突）。</li>
+  </ul>
+
+  <h4>③ 多账户管理</h4>
+  <ul>
+    <li><b>类型：</b>现金、储蓄卡、信用卡、支付宝、微信、投资账户、负债账户。</li>
+    <li><b>余额联动：</b>每笔交易按 type 增减对应账户余额（转账：from 减、to 加，净额不变）；余额=初始余额+Σ流水，实时重算。</li>
+    <li><b>信用卡：</b>账单日、还款日、额度；还款日临近 Toast 提醒；已用额度=额度-可用。</li>
+    <li><b>转账：</b>独立 type=transfer，不计入收支汇总，仅影响两账户余额。</li>
+    <li><b>异常：</b>删除仍有余额的账户 → 提示先转账清零或归档；余额为负 → 红色警示（信用卡/负债允许负）。</li>
+  </ul>
+
+  <h4>④ 日历与流水视图</h4>
+  <ul>
+    <li><b>日历：</b>月视图，每日格显示收支小计与一个点（有记录才亮）；点日 → 下钻当日明细。</li>
+    <li><b>流水：</b>按 transaction_date 倒序；日/周/月分段头显示区间汇总；下拉刷新、上拉加载（分页 30 条）。</li>
+    <li><b>手势：</b>左滑删除、右滑编辑；空状态显示「这天还没有记录，点＋记一笔」引导。</li>
+    <li><b>异常：</b>加载失败 → 展示缓存数据并标注「离线」；刷新冲突 → 以本地 updated_at 最新为准。</li>
+  </ul>
+
+  <h4>⑤ 基础统计报表</h4>
+  <ul>
+    <li><b>月度汇总：</b>收入、支出、结余（=收入-支出，转账不计入）。</li>
+    <li><b>饼图：</b>支出分类占比（点分类看金额/笔数）。</li>
+    <li><b>折线：</b>近 12 月收支趋势（双线：收入绿、支出红，遵循 A 股配色惯例）。</li>
+    <li><b>维度：</b>按月/按年切换；年视图聚合 12 月。</li>
+    <li><b>异常：</b>无数据 → 空图表占位「暂无数据，先记几笔吧」。</li>
+  </ul>
+
+  <h3>4.2 第二层 · 进阶功能</h3>
+  <h4>① 预算管理</h4>
+  <ul><li>月度总预算 + 分类预算；进度条（已用/剩余/超支三色）；阈值 80% 黄、100% 红推送预警；预算不随账本隔离可独立设。</li></ul>
+  <h4>② 周期性账单</h4>
+  <ul><li>固定收/支按 日/周/月/年 自动生成；可「自动入账」或「提醒确认」；next_execute_date 到期引擎在凌晨跑；手动补生成历史缺口。</li></ul>
+  <h4>③ 搜索与筛选</h4>
+  <ul><li>关键词搜 note；金额 大于/小于/区间；分类+账户+日期组合；结果批量编辑/删除（二次确认，软删）。</li></ul>
+  <h4>④ 数据导入导出</h4>
+  <ul><li>导出 CSV / Excel；CSV 导入（字段映射向导）；微信/支付宝账单 PDF/CSV 解析（关键字识别商户+金额+分类推测）。</li></ul>
+  <h4>⑤ 标签系统</h4>
+  <ul><li>记录可打多标签（可报销/旅行/装修）；标签筛选与统计；标签色自定义。</li></ul>
+
+  <h3>4.3 第三层 · 差异化亮点</h3>
+  <h4>① 智能快捷记账</h4>
+  <ul><li>桌面 Widget（iOS/Android 原生桥接 Flutter）、通知栏快捷入口、语音记账（ASR 解析「午饭 35」→ 金额 35 + 餐饮）。</li></ul>
+  <h4>② 资产管理总览</h4>
+  <ul><li>净资产=总资产-总负债仪表盘；资产变化趋势；各账户占比环图。</li></ul>
+  <h4>③ 多账本</h4>
+  <ul><li>独立账本（日常/旅行/项目/家庭）；数据隔离（book_id 分片）；切换器在「我的」；各账本独立统计与预算。</li></ul>
+  <h4>④ 数据可视化增强</h4>
+  <ul><li>消费热力图（日历色块）、同比/环比、自定义报表（维度交叉：分类×账户×时间）。</li></ul>
+  <h4>⑤ 数据安全与隐私</h4>
+  <ul><li>APP 锁（密码/PIN/生物识别）；本地 SQLite 加密（SQLCipher）；云端备份 WebDAV/iCloud/Google Drive（可选）；一键导出+注销清空。</li></ul>
+</section>
+
+<!-- 5 数据模型 -->
+<section id="n5">
+  <h2>5. 数据模型 ER 图描述 <span class="en">Data Model</span></h2>
+  <p class="muted">离线优先：所有写操作本地落库即成功，<code>sync_status</code> 标记待同步；软删除统一用 <code>is_deleted=1</code>；<code>created_at/updated_at</code> 用 UTC 毫秒。</p>
+  <div class="fig">
+    <svg viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg">
+      <g font-size="12.5" text-anchor="middle">
+        <rect x="20" y="20" width="120" height="40" rx="8" class="flow-node"/><text x="80" y="45">账本 book</text>
+        <rect x="20" y="110" width="120" height="40" rx="8" class="flow-node"/><text x="80" y="135">账户 account</text>
+        <rect x="20" y="200" width="120" height="40" rx="8" class="flow-node"/><text x="80" y="225">分类 category</text>
+        <rect x="280" y="115" width="130" height="40" rx="8" class="flow-act"/><text x="345" y="140">交易 transaction</text>
+        <rect x="470" y="20" width="120" height="40" rx="8" class="flow-node"/><text x="530" y="45">预算 budget</text>
+        <rect x="470" y="110" width="130" height="40" rx="8" class="flow-node"/><text x="535" y="135">周期账单 recurring</text>
+        <rect x="470" y="200" width="120" height="40" rx="8" class="flow-node"/><text x="530" y="225">标签 tag</text>
+        <rect x="280" y="220" width="120" height="40" rx="8" class="flow-node"/><text x="340" y="245">设置 settings</text>
+      </g>
+      <g stroke="#9aa3ad" stroke-width="1.3" fill="none" marker-end="url(#ar)">
+        <line x1="80" y1="60" x2="80" y2="108"/>
+        <line x1="80" y1="150" x2="80" y2="198"/>
+        <line x1="140" y1="130" x2="278" y2="135"/>
+        <line x1="140" y1="220" x2="278" y2="140"/>
+        <line x1="410" y1="135" x2="468" y2="45"/>
+        <line x1="410" y1="135" x2="468" y2="130"/>
+        <line x1="530" y1="60" x2="530" y2="108"/>
+        <line x1="410" y1="240" x2="468" y2="225"/>
+        <line x1="240" y1="240" x2="282" y2="240"/>
+      </g>
+      <text x="160" y="92" font-size="10.5" fill="#646a73">1:N 账本→账户</text>
+      <text x="160" y="182" font-size="10.5" fill="#646a73">1:N 账本→分类</text>
+      <text x="220" y="128" font-size="10.5" fill="#646a73">N:1 account_id</text>
+      <text x="220" y="200" font-size="10.5" fill="#646a73">N:1 category_id</text>
+      <text x="445" y="92" font-size="10.5" fill="#646a73">N:1 category_id</text>
+      <text x="445" y="150" font-size="10.5" fill="#646a73">N:1 account_id</text>
+      <text x="500" y="215" font-size="10.5" fill="#646a73">N:1 book_id</text>
+    </svg>
+    <div class="cap">图 5-1 ER 关系（所有表含 book_id 分片 + 软删 + 同步字段）</div>
+  </div>
+
+  <h4>核心表字段</h4>
+  <table>
+    <tr><th>表</th><th>关键字段</th><th>类型/约束</th><th>说明</th></tr>
+    <tr><td>book 账本</td><td><code>id, name, icon, color, currency, is_active</code></td><td>INT PK / TEXT / TEXT / TEXT / TEXT / BOOL</td><td>多账本隔离根；默认 1 个「日常」</td></tr>
+    <tr><td>account 账户</td><td><code>book_id, name, type, icon, color, initial_balance, balance(计算), credit_limit, bill_day, repayment_day, sort_order, is_hidden</code></td><td>FK / TEXT / ENUM / TEXT / REAL / REAL / INT(1-28) / INT / INT / BOOL</td><td>type∈cash/card/credit/alipay/wechat/invest/liability</td></tr>
+    <tr><td>category 分类</td><td><code>book_id, name, type, icon, color, parent_id, sort_order, is_hidden, is_system</code></td><td>FK / TEXT / ENUM(expense/income) / TEXT / INT self-FK / BOOL / BOOL</td><td>parent_id 支持二级分类</td></tr>
+    <tr><td>transaction 交易</td><td><code>book_id, type, account_id, to_account_id, category_id, amount, note, transaction_date</code></td><td>FK / ENUM(exp/inc/transfer) / FK / FK null / FK / REAL / TEXT / DATETIME</td><td>转账时 to_account_id 必填，不计入收支</td></tr>
+    <tr><td>budget 预算</td><td><code>book_id, category_id(null=总), period, amount, warn_threshold</code></td><td>FK / FK null / ENUM(month/year) / REAL / INT(默认80)</td><td>category_id 为空表示总预算</td></tr>
+    <tr><td>recurring 周期账单</td><td><code>book_id, account_id, category_id, type, amount, frequency, next_execute_date, last_execute_date, is_auto, is_active</code></td><td>FK / FK / FK / ENUM / REAL / ENUM / DATE / DATE / BOOL / BOOL</td><td>frequency∈daily/weekly/monthly/yearly</td></tr>
+    <tr><td>tag 标签</td><td><code>book_id, name, color</code></td><td>FK / TEXT / TEXT</td><td>多对多经 transaction_tag 关联</td></tr>
+    <tr><td>settings 设置</td><td><code>book_id, theme_mode, currency, app_lock_enabled, lock_type, pin_hash, default_account_id, sync_provider, webdav_*</code></td><td>FK / ENUM / TEXT / BOOL / ENUM / TEXT / INT / ENUM / TEXT</td><td>同步凭据加密存储</td></tr>
+  </table>
+
+  <h4>通用同步字段（每张表都有）</h4>
+  <table>
+    <tr><th>字段</th><th>类型</th><th>作用</th></tr>
+    <tr><td><code>id</code></td><td>INT PK / 或 UUID</td><td>本地主键；云端用 UUID 避免冲突</td></tr>
+    <tr><td><code>created_at / updated_at</code></td><td>BIGINT(UTC ms)</td><td>版本与时间戳，冲突仲裁依据</td></tr>
+    <tr><td><code>sync_status</code></td><td>ENUM(pending/synced/conflict)</td><td>pending=待上传；conflict=需合并</td></tr>
+    <tr><td><code>is_deleted</code></td><td>BOOL</td><td>软删除，同步时不物理删</td></tr>
+    <tr><td><code>device_id</code></td><td>TEXT</td><td>LWW 平局时的确定性裁决键</td></tr>
+  </table>
+  <div class="note"><b>冲突处理（离线优先）：</b>采用 Last-Write-Wins + 字段级合并。两设备都改同一笔 → 比较 <code>updated_at</code>，新者胜；时间相同用 <code>device_id</code> 字典序裁决（确定性，无死循环）。删除采用「墓碑」策略：<code>is_deleted=1</code> 也同步，避免复活。周期性账单/预算类低频数据冲突概率低，可直接覆盖。</div>
+</section>
+
+<!-- 6 路线图 -->
+<section id="n6">
+  <h2>6. MVP 功能范围与迭代路线图 <span class="en">Scope & Roadmap</span></h2>
+  <h3>MVP（必须上线）</h3>
+  <p><span class="pill">快速记账(计算器)</span><span class="pill">分类体系</span><span class="pill">多账户+转账</span><span class="pill">日历/流水</span><span class="pill">基础统计</span><span class="pill">本地加密存储</span><span class="pill">深色模式</span></p>
+  <div class="note">MVP 不做：预算、周期账单、云同步、Widget、多账本、语音。先验证「3 步记账」留存，再迭代。</div>
+
+  <h3>迭代路线图</h3>
+  <div class="roadmap">
+    <div class="rm-phase"><b>v1.0 · MVP</b><br><span class="muted">第 1–6 周</span></div>
+    <div class="rm-body">Flutter 骨架 + Drift(SQLite/SQLCipher) + 记账/分类/账户/流水/统计 + 离线优先落库。目标：连续 7 天记账成功率 &gt; 80%。</div>
+
+    <div class="rm-phase"><b>v1.1 · 进阶</b><br><span class="muted">第 7–11 周</span></div>
+    <div class="rm-body">预算、周期账单、搜索筛选、标签、CSV/Excel 导入导出（含微信/支付宝账单解析）。</div>
+
+    <div class="rm-phase"><b>v2.0 · 亮点</b><br><span class="muted">第 12–16 周</span></div>
+    <div class="rm-body">桌面 Widget + 通知栏快捷、语音记账、资产管理总览（净资产）、多账本、消费热力图/同比环比、APP 锁与生物识别。</div>
+
+    <div class="rm-phase"><b>v2.1 · 同步</b><br><span class="muted">第 17–20 周</span></div>
+    <div class="rm-body">WebDAV / iCloud / Google Drive 备份恢复；冲突合并上线；一键导出+注销。仅个人用可后做。</div>
+  </div>
+  <h4>技术栈建议</h4>
+  <ul>
+    <li><b>前端：</b>Flutter 3.x（单代码库 iOS/Android）；状态管理 Riverpod；本地 DB <code>drift</code> + <code>sqlcipher</code> 加密。</li>
+    <li><b>图表：</b><code>fl_chart</code>（饼/折线/热力）；图标 <code>flutter_iconpicker</code>。</li>
+    <li><code>同步：</code>本地队列 + 幂等上传；WebDAV 用 <code>webdav_client</code>，iCloud 走 native 桥接。</li>
+    <li><b>生物识别：</b><code>local_auth</code>；APP 锁 <code>flutter_secure_storage</code> 存密钥。</li>
+  </ul>
+</section>
+
+<!-- 7 UI -->
+<section id="n7">
+  <h2>7. UI 风格建议 <span class="en">Visual Style</span></h2>
+  <h4>设计原则</h4>
+  <ul>
+    <li>极简、信息密度适中；主色代表「增长/健康」，金额红涨绿（A 股惯例，支出红、收入绿）。</li>
+    <li>高频操作区（记一笔、保存）落在屏幕下半区，单手可达；底部 Tab 5 个，居中悬浮「＋」。</li>
+    <li>圆角 14px、轻投影、留白充足；空状态必有引导插画+行动按钮。</li>
+  </ul>
+  <h4>配色方案</h4>
+  <div class="swatch">
+    <div class="sw"><div class="c" style="background:#2f7d4f"></div><div class="n">主色 Brand</div><div class="v">#2F7D4F</div></div>
+    <div class="sw"><div class="c" style="background:#e7f3ec"></div><div class="n">主色浅</div><div class="v">#E7F3EC</div></div>
+    <div class="sw"><div class="c" style="background:#d64545"></div><div class="n">支出/涨</div><div class="v">#D64545</div></div>
+    <div class="sw"><div class="c" style="background:#2f9e57"></div><div class="n">收入/结余</div><div class="v">#2F9E57</div></div>
+    <div class="sw"><div class="c" style="background:#2b6fe0"></div><div class="n">强调蓝</div><div class="v">#2B6FE0</div></div>
+    <div class="sw"><div class="c" style="background:#e8704a"></div><div class="n">预警橙</div><div class="v">#E8704A</div></div>
+    <div class="sw"><div class="c" style="background:#1f2329"></div><div class="n">主文字</div><div class="v">#1F2329</div></div>
+    <div class="sw"><div class="c" style="background:#646a73"></div><div class="n">次文字</div><div class="v">#646A73</div></div>
+    <div class="sw"><div class="c" style="background:#f7f8fa;border:1px solid #e8eaed"></div><div class="n">背景</div><div class="v">#F7F8FA</div></div>
+  </div>
+  <h4>字体与图标</h4>
+  <ul>
+    <li><b>字体：</b>中文 苹方 / 思源黑体；数字用等宽 <code>Roboto Mono</code>（金额对齐）。正文 15px，金额 22px 半粗。</li>
+    <li><b>图标：</b>线性+轻微填充（如 <code>Material Symbols</code> / <code>Flutter Icon</code>），2px 描边、圆角；分类图标可换色。</li>
+    <li><b>深色模式：</b>跟随系统；深色背景 <code>#121212</code>、卡片 <code>#1e1e1e</code>、主色提亮为 <code>#3a9d63</code>；金额红绿在深色下提高明度保证对比度。</li>
+  </ul>
+  <div class="note">金额格式统一：<b>千分位 + 2 位小数</b>，如 <code>¥ 12,345.67</code>；负值显示 <code>-¥ 1,200.00</code>。空状态模板：「这里还空空的～ 点下方按钮开始」+ 插画。</div>
+</section>
+
+<footer>一记 · 个人记账 APP 产品方案 v1.0 ｜ 仅个人使用 ｜ 离线优先 · Flutter 跨平台</footer>
+</div>
+</body>
+</html>

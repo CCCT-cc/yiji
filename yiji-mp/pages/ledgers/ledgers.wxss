@@ -1,0 +1,28 @@
+.page { padding: 24rpx 24rpx 160rpx; min-height: 100vh; background: #f5f6f8; }
+.tip { font-size: 24rpx; color: #999; padding: 8rpx 8rpx 20rpx; line-height: 1.6; }
+
+.list { background: #fff; border-radius: 16rpx; overflow: hidden; }
+.lg-row { position: relative; display: flex; align-items: center; padding: 30rpx 24rpx; border-bottom: 1rpx solid #f0f0f0; }
+.lg-row.cur { background: #eaf5ee; }
+.lg-icon { font-size: 46rpx; margin-right: 20rpx; }
+.lg-main { flex: 1; display: flex; flex-direction: column; }
+.lg-name { font-size: 30rpx; color: #222; font-weight: 500; }
+.lg-count { font-size: 24rpx; color: #999; margin-top: 6rpx; }
+.lg-ops { display: flex; flex-direction: column; align-items: flex-end; }
+.lg-op { font-size: 26rpx; color: #2f7d4f; padding: 6rpx 4rpx; }
+.lg-op.del { color: #e54d42; }
+.lg-badge { position: absolute; top: 16rpx; right: 16rpx; font-size: 20rpx; color: #2f7d4f; background: #d6ecdd; border-radius: 8rpx; padding: 2rpx 10rpx; }
+
+.fab { position: fixed; left: 50%; bottom: 48rpx; transform: translateX(-50%); background: #2f7d4f; color: #fff; padding: 24rpx 56rpx; border-radius: 999rpx; font-size: 30rpx; box-shadow: 0 8rpx 24rpx rgba(47,125,79,0.3); }
+
+.mask { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; z-index: 50; }
+.sheet { width: 100%; background: #fff; border-radius: 24rpx 24rpx 0 0; padding: 32rpx 32rpx 48rpx; box-sizing: border-box; }
+.sheet-title { font-size: 32rpx; font-weight: 600; text-align: center; margin-bottom: 28rpx; }
+.field { margin-bottom: 16rpx; }
+.field-label { display: block; font-size: 26rpx; color: #888; margin-bottom: 12rpx; }
+.field-input { background: #f5f6f8; border-radius: 12rpx; padding: 22rpx 24rpx; font-size: 30rpx; }
+.hint { font-size: 23rpx; color: #aaa; line-height: 1.5; margin-bottom: 20rpx; }
+.sheet-actions { display: flex; gap: 20rpx; }
+.btn { flex: 1; border-radius: 14rpx; font-size: 30rpx; padding: 22rpx 0; }
+.btn.ghost { background: #f0f0f0; color: #555; }
+.btn.primary { background: #2f7d4f; color: #fff; }

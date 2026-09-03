@@ -1,0 +1,8 @@
+{
+  "appId": "com.yiji.app",
+  "appName": "一记",
+  "webDir": "../yiji",
+  "server": {
+    "androidScheme": "https"
+  }
+}
