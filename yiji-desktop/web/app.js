@@ -572,7 +572,7 @@
         <div class="list-row" data-go="import"><div class="ico" style="background:var(--brand-soft)">📥</div><div class="meta"><div class="t">导入数据（CSV）</div><div class="s">从文件恢复</div></div><span class="arrow">›</span></div>
         <div class="list-row" data-go="backup"><div class="ico" style="background:var(--brand-soft)">💾</div><div class="meta"><div class="t">完整备份（JSON）</div><div class="s">导出全部账本为文件，最稳妥</div></div><span class="arrow">›</span></div>
         <div class="list-row" data-go="restore"><div class="ico" style="background:var(--brand-soft)">♻️</div><div class="meta"><div class="t">从备份恢复（JSON）</div><div class="s">合并回当前账本</div></div><span class="arrow">›</span></div>
-        <div class="list-row" data-go="sync"><div class="ico" style="background:var(--brand-soft)">☁️</div><div class="meta"><div class="t">数据同步</div><div class="s">${DB.settings.last_sync_at ? '上次 ' + new Date(DB.settings.last_sync_at).toLocaleString() : 'WebDAV 未配置'}</div></div><span class="arrow">›</span></div>
+        <div class="list-row" data-go="sync"><div class="ico" style="background:var(--brand-soft)">☁️</div><div class="meta"><div class="t">云端同步（一记账号）</div><div class="s">${window.YijiSync && YijiSync.isLoggedIn() ? ('已登录 ' + (YijiSync.account() || '')) : (DB.settings.last_sync_at ? '上次 ' + new Date(DB.settings.last_sync_at).toLocaleString() : '登录后多端同步')}</div></div><span class="arrow">›</span></div>
         <div class="list-row" data-go="voice"><div class="ico" style="background:var(--brand-soft)">🎤</div><div class="meta"><div class="t">语音记账</div><div class="s">说一句自动记一笔</div></div><span class="arrow">›</span></div>
       </div>
       <div class="section-title">数据与隐私</div>
@@ -594,7 +594,7 @@
     if (go === 'import') return importCSV();
     if (go === 'backup') return exportBackup();
     if (go === 'restore') return importBackup();
-    if (go === 'sync') return openSync();
+    if (go === 'sync') return (window.YijiSync ? YijiSync.open() : openSync());
     if (go === 'voice') return openVoice();
     if (go === 'about') return openAbout();
     if (go === 'reset') return doReset();
@@ -1352,7 +1352,7 @@
     $('#wdTest', $('#formModal')).onclick = () => { readCfg(); testConnection(); };
     $('#wdSync', $('#formModal')).onclick = () => { readCfg(); syncNow(); };
   }
-  if (typeof window !== 'undefined') window.Yiji = { mergeDB: mergeDB, syncNow: syncNow, testConnection: testConnection, openSync: openSync };
+  if (typeof window !== 'undefined') window.Yiji = { mergeDB: mergeDB, syncNow: syncNow, testConnection: testConnection, openSync: openSync, getDB: () => DB, setDB: (v) => { DB = v; }, save: save, toast: toast, nav: nav, openSheet: openSheet, closeSheet: closeSheet, isElec: isElec };
 
   /* ---------- 语音记账 ---------- */
   // 离线解析：金额(正则) + 类型/账户/分类(关键词)。识别由 webkitSpeechRecognition 提供，此处只负责把文本变成一笔账

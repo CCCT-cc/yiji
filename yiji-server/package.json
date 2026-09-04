@@ -1,0 +1,14 @@
+{
+  "name": "yiji-server",
+  "version": "1.0.0",
+  "description": "一记 · 记账 云端同步后端（零依赖 Node，服务端加密存储）",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "license": "MIT"
+}

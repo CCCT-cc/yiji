@@ -49,3 +49,6 @@ yiji-mp/node_modules/
 
 # ============ 网页版 yiji ============
 yiji/node_modules/
+
+# ============ 后端 yiji-server（运行时数据，含账本密文） ============
+yiji-server/data/
