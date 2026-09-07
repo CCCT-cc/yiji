@@ -22,7 +22,7 @@
     "productName": "一记",
     "copyright": "Copyright © 2026 一记",
     "directories": {
-      "output": "out3",
+      "output": "out4",
       "buildResources": "../assets"
     },
     "files": [

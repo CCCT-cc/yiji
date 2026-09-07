@@ -1,10 +1,16 @@
 # 依赖
 node_modules/
 
-# 打包/构建产物（体积巨大，由使用者自行 npm run pack 生成）
+# 打包/构建产物（体积巨大，由使用者自行 npm run dist 生成）
 dist/
 dist2/
 _OLD_BUILDS/
+# electron-builder 输出（含最终安装包，体积巨大，不进仓库）
+out/
+out2/
+out3/
+out4/
+release/
 
 # 用户运行时数据（绝对不能进仓库：含真实账本与自动备份）
 backups/
