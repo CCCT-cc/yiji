@@ -27,6 +27,19 @@ lvlparse.py
 yiji-desktop/dist/
 yiji-desktop/dist2/
 yiji-desktop/_OLD_BUILDS/
+# electron-builder 输出（含 ~100MB+ 安装包二进制，禁止进仓库）
+yiji-desktop/release/
+yiji-desktop/out/
+yiji-desktop/out2/
+yiji-desktop/out3/
+# 打包临时目录
+yiji-desktop/.electron-builder/
+yiji-desktop/build/
+# 本地打包排错残留（7za 替身 / 修好的 winCodeSign 包 / 工具脚本）
+_build_helper/
+winCodeSign_fixed.7z
+_build_helper.dist/
+_build_helper.build/
 
 # ============ 安卓 yiji-cap（密钥/构建产物） ============
 yiji-cap/node_modules/

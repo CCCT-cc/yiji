@@ -36,41 +36,9 @@
   let DB = null;
   const deviceId = (() => { let d = localStorage.getItem('yiji_dev'); if (!d) { d = uid(); localStorage.setItem('yiji_dev', d); } return d; })();
 
-  let autoRecovered = false; // 本次启动是否从自动备份自愈（根治 localStorage 偶发被清空）
-  // 校验备份 JSON 是否为有效账本（至少含一个账本）
-  function isValidBackup(json) {
-    try { const o = JSON.parse(json); return !!(o && o.books && o.books.length); } catch (e) { return false; }
-  }
-  // 从备份找回账本：桌面版读 userData/backups 文件（独立于 localStorage，清档/重装也不丢）；网页版退化为 localStorage 滚动快照
-  async function recoverFromBackup() {
-    try {
-      if (isElec() && window.electronAPI && window.electronAPI.readBackupFile) {
-        const c = await window.electronAPI.readBackupFile('auto_latest.json');
-        if (c && isValidBackup(c)) return c;
-      }
-      const web = localStorage.getItem('yiji_autobackup_v1');
-      if (web && isValidBackup(web)) return web;
-    } catch (e) { /* 自愈失败绝不阻断主流程 */ }
-    return null;
-  }
-  // 自愈式加载：localStorage 读不到/为空/损坏时，先尝试从自动备份恢复，恢复成功写回 localStorage；
-  // 只有在任何备份都没有（全新用户）时才 seed()，从根本上杜绝「间歇性被重置成空账本」
-  async function load() {
-    let raw = null;
-    try { raw = localStorage.getItem(KEY); } catch (e) { raw = null; }
-    let obj = null;
-    try { obj = raw ? JSON.parse(raw) : null; } catch (e) { obj = null; }
-    if (obj && obj.books && obj.books.length) { DB = obj; return DB; }
-    const backup = await recoverFromBackup();
-    if (backup) {
-      try { DB = JSON.parse(backup); } catch (e) { DB = null; }
-      if (DB && DB.books && DB.books.length) {
-        autoRecovered = true;
-        try { save(); } catch (e) { /* 回写失败也不影响本次恢复 */ }
-        return DB;
-      }
-    }
-    seed();
+  function load() {
+    try { DB = JSON.parse(localStorage.getItem(KEY)); } catch (e) { DB = null; }
+    if (!DB || !DB.books || !DB.books.length) { seed(); }
     return DB;
   }
   function save() { localStorage.setItem(KEY, JSON.stringify(DB)); autoBackup(); }
@@ -284,11 +252,12 @@
       </div>
       ${recent.length ? `<div class="reuse-strip"><div class="rs-label">照上次再记一笔</div><div class="rs-row">${recent.slice(0, 6).map(t => { const c = catById(t.category_id); const nm = c ? c.name : (t.type === 'transfer' ? '转账' : '未分类'); const sign = t.type === 'inc' ? '+' : t.type === 'transfer' ? '' : '-'; return `<button class="reuse-chip" data-reuse="${t.id}"><span style="color:${c ? c.color : '#999'}">${c ? c.icon : '•'}</span>${nm}<b class="mono">${sign}${money(t.amount)}</b></button>`; }).join('')}</div></div>` : ''}
       ${favList().length ? `<div class="reuse-strip"><div class="rs-label">常用（点一下再记 · ✎ 可改名/改金额）</div><div class="rs-row">${favList().map(t => { const c = catById(t.category_id); const catName = c ? c.name : (t.type === 'transfer' ? '转账' : '未分类'); const nm = t.fav_label || catName; const amt = t.fav_amount != null ? Number(t.fav_amount) : t.amount; const sign = t.type === 'inc' ? '+' : t.type === 'transfer' ? '' : '-'; return `<div class="fav-item"><button class="reuse-chip fav" data-favreuse="${t.id}"><span style="color:${c ? c.color : '#999'}">${c ? c.icon : '•'}</span>${nm}<b class="mono">${sign}${money(amt)}</b></button><button class="fav-edit" data-favedit="${t.id}" title="改名 / 改金额">✎</button></div>`; }).join('')}</div></div>` : ''}
-      <div class="card"><h3>最近记录</h3>${recHtml}</div>`;
+      <div class="card"><h3 class="h-with-act">最近记录 <a class="link-btn" data-go-flow>查看全部 ›</a></h3>${recHtml}</div>`;
     $$('[data-reuse]', v).forEach(b => b.onclick = () => reuseTx(b.dataset.reuse));
     $$('[data-favreuse]', v).forEach(b => b.onclick = () => reuseTx(b.dataset.favreuse));
     $$('[data-favedit]', v).forEach(b => b.onclick = (e) => { e.stopPropagation(); openFavEdit(b.dataset.favedit); });
     $$('[data-go]', v).forEach(b => b.onclick = () => meGo(b.dataset.go));
+    $$('[data-go-flow]', v).forEach(b => b.onclick = () => nav('flow'));
   }
 
   /* ============================================================
@@ -344,11 +313,25 @@
         return (t.note && t.note.toLowerCase().includes(q)) || cn.toLowerCase().includes(q) || String(t.amount).includes(q);
       });
     }
-    if (!list.length) { box.innerHTML = '<div class="empty"><div class="eb">🗒️</div>' + ((flowSearch || flowType !== 'all') ? '没有匹配的记录' : (flowFilter ? '这一天没有记录' : '暂无流水')) + '</div>'; return; }
+    const filtered = !!(flowFilter || flowType !== 'all' || flowSearch);
+    if (!list.length) {
+      box.innerHTML = '<div class="empty"><div class="eb">🗒️</div>' + ((flowSearch || flowType !== 'all') ? '没有匹配的记录' : (flowFilter ? '这一天没有记录' : '暂无流水')) + (filtered ? ' · <a class="link-btn" id="clearFilter2">查看全部</a>' : '') + '</div>';
+      const cf2 = $('#clearFilter2', box); if (cf2) cf2.onclick = clearFlowFilter;
+      return;
+    }
+    // 顶部汇总：全部流水 / 筛选结果
+    let summary = '<div class="flow-summary">';
+    if (filtered) {
+      summary += `筛选结果 <b>${list.length}</b> 笔 · <a class="link-btn" id="clearFilter">查看全部流水</a>`;
+    } else {
+      const dates = list.map(t => t.transaction_date).sort();
+      summary += `全部流水 · 共 <b>${list.length}</b> 笔 · 自 ${fmtDate(dates[0])} 起`;
+    }
+    summary += '</div>';
     // 按日分组
     const groups = {};
     list.forEach(t => { (groups[t.transaction_date] = groups[t.transaction_date] || []).push(t); });
-    let html = '';
+    let html = summary;
     Object.keys(groups).sort((a, b) => b.localeCompare(a)).forEach(day => {
       const arr = groups[day];
       const e = arr.filter(t => t.type !== 'inc').reduce((s, t) => s + t.amount, 0);
@@ -357,7 +340,16 @@
       html += arr.map(txRowSwipe).join('');
     });
     box.innerHTML = html;
+    const cf = $('#clearFilter', box); if (cf) cf.onclick = clearFlowFilter;
     bindSwipe();
+  }
+  // 一键清除 日期/类型/搜索 筛选，回到「全部流水」
+  function clearFlowFilter() {
+    flowFilter = null; flowType = 'all'; flowSearch = '';
+    const s = $('#flowSearch'); if (s) s.value = '';
+    $$('[data-ftype]', $('#viewFlow')).forEach(x => x.classList.toggle('on', x.dataset.ftype === 'all'));
+    $$('.cal-cell.sel', $('#viewFlow')).forEach(x => x.classList.remove('sel'));
+    renderFlowList();
   }
 
   /* 普通行（首页/无滑动） */
@@ -373,7 +365,7 @@
       <div class="${col} mono" style="font-weight:700">${sign}${money(t.amount)}</div>
     </div>`;
   }
-  /* 可滑动行（流水） */
+  /* 可滑动行（流水）— 桌面 / 移动均可直接 编辑 / 删除 / 收藏 */
   function txRowSwipe(t) {
     const c = catById(t.category_id); const a = accById(t.account_id);
     const sign = t.type === 'inc' ? '+' : t.type === 'transfer' ? '' : '-';
@@ -382,24 +374,38 @@
     const sub = (a ? a.name : '') + (t.note ? ' · ' + t.note : '');
     return `<div class="tx-item" data-id="${t.id}">
       <div class="tx-bg"><div class="act edit" data-edit="${t.id}">编辑</div><div class="act del" data-del="${t.id}">删除</div></div>
-      <div class="tx-fg">
+      <div class="tx-fg" data-open="${t.id}">
         <div class="ico" style="background:${c ? c.color + '22' : '#eee'};color:${c ? c.color : '#999'}">${c ? c.icon : '•'}</div>
-        <div class="meta"><div class="t">${title}</div><div class="s">${sub}</div></div>
-        <button class="favbtn ${t.favorite ? 'on' : ''}" data-fav="${t.id}" title="收藏到常用">★</button>
+        <div class="meta"><div class="t">${title}</div><div class="s">${sub || ' '}</div></div>
+        <div class="row-acts">
+          <button class="row-btn fav ${t.favorite ? 'on' : ''}" data-fav="${t.id}" title="收藏到常用">★</button>
+          <button class="row-btn edit" data-edit="${t.id}" title="编辑这笔">✎</button>
+          <button class="row-btn del" data-del="${t.id}" title="删除这笔">🗑</button>
+        </div>
         <div class="${col} mono" style="font-weight:700">${sign}${money(t.amount)}</div>
       </div>
     </div>`;
   }
   function bindSwipe() {
     $$('.tx-item').forEach(item => {
+      const id = item.dataset.id;
       const fg = $('.tx-fg', item); let sx = 0, dx = 0, open = false;
+      // 移动端：左滑露出 编辑 / 删除
       fg.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; dx = 0; fg.style.transition = 'none'; }, { passive: true });
       fg.addEventListener('touchmove', (e) => { dx = e.touches[0].clientX - sx; if (!open && dx > 0) dx = 0; if (dx < -120) dx = -120; fg.style.transform = 'translateX(' + dx + 'px)'; }, { passive: true });
       fg.addEventListener('touchend', () => { fg.style.transition = 'transform .18s'; if (dx < -60) { fg.style.transform = 'translateX(-140px)'; open = true; } else { fg.style.transform = ''; open = false; } });
-      const edit = $('.edit', item), del = $('.del', item), fav = $('.favbtn', item);
-      if (edit) edit.onclick = () => openRec({ id: item.dataset.id });
-      if (del) del.onclick = () => { if (confirm('确定删除这条记录？')) { delTx(item.dataset.id); toast('已删除'); renderFlow(); if ($('#viewHome').hidden === false) renderHome(); } };
-      if (fav) fav.onclick = (e) => { e.stopPropagation(); toggleFav(item.dataset.id); };
+      // 桌面 / 网页：行内按钮直接 编辑 / 删除 / 收藏（移动端左滑的 编辑/删除 同样生效）
+      const doEdit = () => openRec(id);
+      const doDel = () => { if (confirm('确定删除这条记录？删除后可在「我的 → 备份与恢复」中找回。')) { delTx(id); toast('已删除'); renderFlow(); if ($('#viewHome').hidden === false) renderHome(); } };
+      const doFav = (e) => { e.stopPropagation(); toggleFav(id); };
+      const bgEdit = $('.tx-bg .edit', item), bgDel = $('.tx-bg .del', item);
+      if (bgEdit) bgEdit.onclick = doEdit;
+      if (bgDel) bgDel.onclick = doDel;
+      $$('.row-btn.edit', item).forEach(b => b.onclick = (e) => { e.stopPropagation(); doEdit(); });
+      $$('.row-btn.del', item).forEach(b => b.onclick = (e) => { e.stopPropagation(); doDel(); });
+      $$('.row-btn.fav', item).forEach(b => b.onclick = doFav);
+      // 点击整行（非按钮区域）快速打开编辑
+      if (fg) fg.addEventListener('click', (e) => { if (e.target.closest('.row-btn') || e.target.closest('.tx-bg')) return; doEdit(); });
     });
   }
 
@@ -1179,14 +1185,13 @@
       else if (a === 'open-transfer') { openRec(null); rec.type = 'transfer'; renderRec(); }
     });
   }
-  async function init() {
-    await load(); applyTheme();
+  function init() {
+    load(); applyTheme();
     recordSnapshot();
     const made = processRecurring();
     if (made) setTimeout(() => toast('已自动补记 ' + made + ' 笔定期账单'), 500);
     bindGlobal(); nav('home');
     if (DB.settings.app_lock_enabled && DB.settings.pin_hash) showLock();
-    if (autoRecovered) setTimeout(() => toast('检测到本地账本异常，已从自动备份恢复数据'), 400);
   }
   // 每日打开应用时记录一次净资产快照，用于总览趋势
   function recordSnapshot() {

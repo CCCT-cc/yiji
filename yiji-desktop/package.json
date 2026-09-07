@@ -7,10 +7,51 @@
   "private": true,
   "scripts": {
     "start": "electron .",
-    "pack": "electron-packager . 一记 --platform=win32 --arch=x64 --out=dist --overwrite"
+    "pack": "electron-packager . 一记 --platform=win32 --arch=x64 --out=dist --overwrite",
+    "dist:win": "electron-builder --win nsis",
+    "dist:mac": "electron-builder --mac dmg",
+    "dist:linux": "electron-builder --linux AppImage",
+    "dist": "electron-builder"
   },
   "devDependencies": {
     "electron": "^31.0.0",
-    "electron-packager": "^17.1.2"
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.yiji.desktop",
+    "productName": "一记",
+    "copyright": "Copyright © 2026 一记",
+    "directories": {
+      "output": "out3",
+      "buildResources": "../assets"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "web/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "../assets/icon.png",
+      "artifactName": "一记-${version}-setup.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "一记"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "build/icon.png",
+      "category": "public.app-category.finance"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "build/icon.png",
+      "category": "Finance"
+    }
   }
 }

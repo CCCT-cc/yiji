@@ -158,6 +158,19 @@ body{
 .tx-item .meta{flex:1;min-width:0}
 .tx-item .meta .t{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tx-item .meta .s{font-size:12px;color:var(--sub)}
+.tx-item .row-acts{flex:0 0 auto;display:flex;align-items:center;gap:5px}
+.tx-item .row-btn{width:32px;height:32px;border:1px solid var(--line);background:var(--bg);border-radius:9px;font-size:15px;line-height:1;color:var(--sub);cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.tx-item .row-btn:hover{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+.tx-item .row-btn.fav.on{color:#f5b301;border-color:#f5b301}
+.tx-item .row-btn.edit:hover{background:#e8a33d;color:#fff;border-color:#e8a33d}
+.tx-item .row-btn.del:hover{background:var(--exp);color:#fff;border-color:var(--exp)}
+.tx-item .tx-fg{cursor:pointer}
+.flow-summary{padding:10px 4px 2px;font-size:13px;color:var(--sub)}
+.flow-summary b{color:var(--ink);font-size:15px}
+.link-btn{color:var(--brand);cursor:pointer;font-weight:600;text-decoration:none}
+.link-btn:hover{text-decoration:underline}
+.h-with-act{display:flex;align-items:center;justify-content:space-between}
+.h-with-act .link-btn{font-size:13px;font-weight:600}
 
 /* 统计 */
 .seg{display:inline-flex;background:var(--brand-soft);border-radius:22px;padding:4px;margin:6px 0}
