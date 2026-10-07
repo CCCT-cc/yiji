@@ -226,8 +226,9 @@
     const v = $('#viewHome'); const nw = netWorth();
     const inc = monthTx(ymd()).filter(t => t.type === 'inc').reduce((s, t) => s + t.amount, 0);
     const exp = monthTx(ymd()).filter(t => t.type === 'exp' || t.type === 'transfer').reduce((s, t) => s + t.amount, 0);
-    const recent = liveTx().slice().sort((a, b) => (b.transaction_date + b.created_at).localeCompare(a.transaction_date + a.created_at)).slice(0, 8);
-    const recHtml = recent.length ? recent.map(txRow).join('') : '<div class="empty"><div class="eb">🪙</div>还没有记录，点击中间的 ＋ 记一笔吧</div>';
+    const allCount = liveTx().length;
+    const recent = liveTx().slice().sort((a, b) => (b.transaction_date + b.created_at).localeCompare(a.transaction_date + a.created_at)).slice(0, 10);
+    const recHtml = recent.length ? recent.map(txRowSwipe).join('') : '<div class="empty"><div class="eb">🪙</div>还没有记录，点击中间的 ＋ 记一笔吧</div>';
     const accBreak = accsOf(curBookId()).slice().sort((x, y) => y.balance - x.balance);
     const breakHtml = accBreak.length ? `<div class="acc-break">${accBreak.map(a => `<div class="acc-row" data-go="accounts"><span class="ai">${a.icon}</span><span class="an">${a.name}</span><b class="mono ${a.balance < 0 ? 'neg' : ''}">${money(a.balance)}</b></div>`).join('')}</div>` : '';
     v.innerHTML =
@@ -252,12 +253,14 @@
       </div>
       ${recent.length ? `<div class="reuse-strip"><div class="rs-label">照上次再记一笔</div><div class="rs-row">${recent.slice(0, 6).map(t => { const c = catById(t.category_id); const nm = c ? c.name : (t.type === 'transfer' ? '转账' : '未分类'); const sign = t.type === 'inc' ? '+' : t.type === 'transfer' ? '' : '-'; return `<button class="reuse-chip" data-reuse="${t.id}"><span style="color:${c ? c.color : '#999'}">${c ? c.icon : '•'}</span>${nm}<b class="mono">${sign}${money(t.amount)}</b></button>`; }).join('')}</div></div>` : ''}
       ${favList().length ? `<div class="reuse-strip"><div class="rs-label">常用（点一下再记 · ✎ 可改名/改金额）</div><div class="rs-row">${favList().map(t => { const c = catById(t.category_id); const catName = c ? c.name : (t.type === 'transfer' ? '转账' : '未分类'); const nm = t.fav_label || catName; const amt = t.fav_amount != null ? Number(t.fav_amount) : t.amount; const sign = t.type === 'inc' ? '+' : t.type === 'transfer' ? '' : '-'; return `<div class="fav-item"><button class="reuse-chip fav" data-favreuse="${t.id}"><span style="color:${c ? c.color : '#999'}">${c ? c.icon : '•'}</span>${nm}<b class="mono">${sign}${money(amt)}</b></button><button class="fav-edit" data-favedit="${t.id}" title="改名 / 改金额">✎</button></div>`; }).join('')}</div></div>` : ''}
-      <div class="card"><h3 class="h-with-act">最近记录 <a class="link-btn" data-go-flow>查看全部 ›</a></h3>${recHtml}</div>`;
+      <div class="card"><h3 class="h-with-act">最近记录 <span style="font-size:12px;font-weight:400;color:var(--sub)">共 ${allCount} 笔 · 行内 ✎ 可改</span> <a class="link-btn" data-go-flow>查看全部 ›</a></h3>${recHtml}</div>`;
     $$('[data-reuse]', v).forEach(b => b.onclick = () => reuseTx(b.dataset.reuse));
     $$('[data-favreuse]', v).forEach(b => b.onclick = () => reuseTx(b.dataset.favreuse));
     $$('[data-favedit]', v).forEach(b => b.onclick = (e) => { e.stopPropagation(); openFavEdit(b.dataset.favedit); });
     $$('[data-go]', v).forEach(b => b.onclick = () => meGo(b.dataset.go));
     $$('[data-go-flow]', v).forEach(b => b.onclick = () => nav('flow'));
+    // 首页「最近记录」同样是可编辑行：行内 ✎ 编辑 / 🗑 删除 / ★ 收藏，点整行也能改
+    bindSwipe();
   }
 
   /* ============================================================
@@ -365,13 +368,23 @@
       <div class="${col} mono" style="font-weight:700">${sign}${money(t.amount)}</div>
     </div>`;
   }
-  /* 可滑动行（流水）— 桌面 / 移动均可直接 编辑 / 删除 / 收藏 */
+  /* 日期短标签：今天 / 昨天 / MM/DD / YY/MM/DD —— 首页与流水都用它标明这笔是哪天的 */
+  function dayLabel(d) {
+    if (!d) return '';
+    const t = ymd();
+    if (d === t) return '今天';
+    if (d === ymd(new Date(Date.now() - 86400000))) return '昨天';
+    if (d.slice(0, 4) === t.slice(0, 4)) return d.slice(5).replace('-', '/');
+    return d.slice(2).replace(/-/g, '/');
+  }
+  /* 可滑动行（流水 / 首页最近记录）— 桌面 / 移动均可直接 编辑 / 删除 / 收藏 */
   function txRowSwipe(t) {
     const c = catById(t.category_id); const a = accById(t.account_id);
     const sign = t.type === 'inc' ? '+' : t.type === 'transfer' ? '' : '-';
     const col = colorOf(t.type);
     const title = t.type === 'transfer' ? ('转账 → ' + (accById(t.to_account_id) || {}).name) : (c ? c.name : '未分类');
-    const sub = (a ? a.name : '') + (t.note ? ' · ' + t.note : '');
+    const tail = [a ? a.name : '', t.note || ''].filter(Boolean).join(' · ');
+    const sub = dayLabel(t.transaction_date) + (tail ? ' · ' + tail : '');
     return `<div class="tx-item" data-id="${t.id}">
       <div class="tx-bg"><div class="act edit" data-edit="${t.id}">编辑</div><div class="act del" data-del="${t.id}">删除</div></div>
       <div class="tx-fg" data-open="${t.id}">
@@ -388,6 +401,8 @@
   }
   function bindSwipe() {
     $$('.tx-item').forEach(item => {
+      if (item.dataset.swBound) return; // 首页与流水可能共用同一批行，避免重复绑定
+      item.dataset.swBound = '1';
       const id = item.dataset.id;
       const fg = $('.tx-fg', item); let sx = 0, dx = 0, open = false;
       // 移动端：左滑露出 编辑 / 删除
