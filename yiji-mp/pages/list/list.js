@@ -66,8 +66,21 @@ Page({
     });
   },
 
-  del(e) {
+  onRow(e) {
     const id = e.currentTarget.dataset.id;
+    wx.showActionSheet({
+      itemList: ['编辑这笔', '删除这笔'],
+      success: (r) => {
+        if (r.tapIndex === 0) {
+          wx.navigateTo({ url: '/pages/add/add?id=' + id });
+        } else if (r.tapIndex === 1) {
+          this.confirmDel(id);
+        }
+      }
+    });
+  },
+
+  confirmDel(id) {
     wx.showModal({
       title: '删除记录',
       content: '确定删除这条记录吗？',

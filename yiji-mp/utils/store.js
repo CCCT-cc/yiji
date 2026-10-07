@@ -150,6 +150,17 @@ function removeTransaction(ledger, id) {
   return saveLedger(ledger);
 }
 
+function updateTransaction(ledger, id, patch) {
+  const tx = (ledger.transactions || []).find((t) => t.id === id);
+  if (tx) {
+    if (patch.amount !== undefined) {
+      patch = Object.assign({}, patch, { amount: Number(patch.amount) || 0 });
+    }
+    Object.assign(tx, patch);
+  }
+  return saveLedger(ledger);
+}
+
 function addAccount(ledger, a) {
   ledger.accounts = ledger.accounts || [];
   ledger.accounts.push({
@@ -262,6 +273,7 @@ module.exports = {
   monthSummary,
   categoryStats,
   addTransaction,
+  updateTransaction,
   removeTransaction,
   addAccount,
   updateAccount,

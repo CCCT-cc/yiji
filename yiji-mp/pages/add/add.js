@@ -11,17 +11,39 @@ Page({
     categoryIndex: 0,
     amount: '',
     date: '',
-    note: ''
+    note: '',
+    editId: ''
   },
 
-  onLoad() {
+  onLoad(options) {
     const ledger = store.getCurrentLedger();
-    this.setData({
+    const base = {
       ledger,
       accounts: ledger.accounts || [],
       categories: (ledger.categories || []).filter((c) => c.type === 'expense'),
       date: util.ymd(new Date())
-    });
+    };
+    // 编辑模式：/pages/add/add?id=xxx —— 预填该笔记录，保存时走更新而非新增
+    if (options && options.id) {
+      const tx = (ledger.transactions || []).find((t) => t.id === options.id);
+      if (tx) {
+        const catsOfType = (ledger.categories || []).filter((c) => c.type === tx.type);
+        const accIndex = (ledger.accounts || []).findIndex((a) => a.id === tx.accountId);
+        const catIndex = catsOfType.findIndex((c) => c.id === tx.categoryId);
+        Object.assign(base, {
+          type: tx.type,
+          categories: catsOfType,
+          accountIndex: accIndex < 0 ? 0 : accIndex,
+          categoryIndex: catIndex < 0 ? 0 : catIndex,
+          amount: String(tx.amount),
+          date: tx.date,
+          note: tx.note || '',
+          editId: tx.id
+        });
+        wx.setNavigationBarTitle({ title: '编辑记录' });
+      }
+    }
+    this.setData(base);
   },
 
   switchType(e) {
@@ -66,16 +88,21 @@ Page({
     }
     const acc = this.data.accounts[this.data.accountIndex];
     const cat = this.data.categories[this.data.categoryIndex];
-    store.addTransaction(this.data.ledger, {
-      id: store.uid(),
+    const payload = {
       accountId: acc.id,
       categoryId: cat.id,
       type: this.data.type,
       amount: amt,
       date: this.data.date,
       note: this.data.note
-    });
-    wx.showToast({ title: '已保存', icon: 'success' });
+    };
+    if (this.data.editId) {
+      store.updateTransaction(this.data.ledger, this.data.editId, payload);
+      wx.showToast({ title: '已更新', icon: 'success' });
+    } else {
+      store.addTransaction(this.data.ledger, Object.assign({ id: store.uid() }, payload));
+      wx.showToast({ title: '已保存', icon: 'success' });
+    }
     setTimeout(() => wx.navigateBack(), 500);
   }
 });

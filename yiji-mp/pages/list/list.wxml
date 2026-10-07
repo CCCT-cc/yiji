@@ -13,7 +13,8 @@
         wx:for-item="it"
         class="tx-row"
         data-id="{{it.id}}"
-        bindlongpress="del"
+        bindtap="onRow"
+        bindlongpress="onRow"
       >
         <text class="tx-icon">{{it.icon}}</text>
         <view class="tx-mid">
