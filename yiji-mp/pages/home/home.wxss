@@ -46,3 +46,12 @@
 .acc-icon { font-size: 40rpx; margin-right: 20rpx; }
 .acc-name { flex: 1; font-size: 28rpx; color: #333; }
 .acc-bal { font-size: 30rpx; font-weight: 600; color: #2f7d4f; }
+
+/* 最近记录卡片 */
+.recent-card { margin-top: 24rpx; }
+.recent-row { align-items: center; }
+.recent-mid { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.recent-sub { font-size: 22rpx; margin-top: 4rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recent-amt { font-size: 30rpx; font-weight: 600; margin-right: 16rpx; }
+.recent-del { font-size: 30rpx; padding: 8rpx 12rpx; opacity: 0.55; }
+.recent-del:active { opacity: 1; }

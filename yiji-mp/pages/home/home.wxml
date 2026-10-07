@@ -35,4 +35,29 @@
   </view>
 </view>
 
+<view class="card recent-card">
+  <view class="row-between acc-head">
+    <text class="acc-title">最近记录</text>
+    <text class="acc-more" bindtap="goList">全部 ›</text>
+  </view>
+  <block wx:if="{{recent.length === 0}}">
+    <view class="empty">还没有记录，点「＋」记一笔</view>
+  </block>
+  <view
+    wx:for="{{recent}}"
+    wx:key="id"
+    class="acc-row recent-row"
+    data-id="{{item.id}}"
+    bindtap="editTx"
+  >
+    <text class="acc-icon">{{item.icon}}</text>
+    <view class="recent-mid">
+      <text class="acc-name">{{item.catName}}</text>
+      <text class="recent-sub c-muted">{{item.sub}}</text>
+    </view>
+    <text class="recent-amt {{item.cls}}">{{item.sign}}{{item.amount}}</text>
+    <text class="recent-del" data-id="{{item.id}}" catchtap="delTx">🗑</text>
+  </view>
+</view>
+
 <view class="fab" bindtap="goAdd">＋</view>
