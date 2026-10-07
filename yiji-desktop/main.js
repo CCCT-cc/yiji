@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, dialog, globalShortcut } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -40,7 +40,7 @@ function createWindow() {
 function buildTrayMenu() {
   const openAtLogin = app.getLoginItemSettings().openAtLogin;
   return Menu.buildFromTemplate([
-    { label: '打开一记', click: () => showWin() },
+    { label: '打开一记（快捷键 Ctrl+Shift+Y）', click: () => showWin() },
     {
       label: (openAtLogin ? '☑ ' : '☐ ') + '开机自动启动',
       click: () => {
@@ -92,12 +92,22 @@ function createTray() {
 app.whenReady().then(() => {
   createWindow();
   createTray();
+  // 全局快捷键：任何应用前台时，Ctrl+Shift+Y 一键唤起一记主窗口（配合托盘常驻，随手记账更快）
+  try {
+    const ret = globalShortcut.register('CommandOrControl+Shift+Y', () => showWin());
+    if (!ret) console.warn('全局快捷键注册失败（可能被其他应用占用）');
+  } catch (e) { /* 个别环境限制全局钩子，忽略 */ }
   // 默认开启开机自启（桌面常驻记账本）；用户可在托盘菜单关闭
   try {
     if (!app.getLoginItemSettings().openAtLogin) {
       app.setLoginItemSettings({ openAtLogin: true, path: process.execPath, args: [] });
     }
   } catch (e) { /* 某些环境无权限，忽略 */ }
+});
+
+app.on('will-quit', () => {
+  // 退出前释放全局快捷键，避免残留系统钩子
+  try { globalShortcut.unregisterAll(); } catch (e) { /* ignore */ }
 });
 
 app.on('window-all-closed', () => {
